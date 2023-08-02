@@ -1,32 +1,40 @@
 from tkinter import *
-import pygame
 from tkinter import filedialog
 
-#===========================================================================================================
+import pygame
+
 root = Tk()
-root.title("Lazr Assisant: MP3 Player")
-root.geometry("500x250")
+root.title("MP3 Player")
+root.geometry("400x250")
+root.iconbitmap("app.ico")
 root.resizable(False, False)
 pygame.mixer.init()
-#===========================================================================================================
+
+
 def add_song():
-    song = filedialog.askopenfilename(initialdir='C:/Users/Public/Music/', title='Choose a song', filetypes=(('MP3 Files','*.mp3'), ))
+    song = filedialog.askopenfilename(initialdir='C:/Users/Public/Music/', title='Choose a song',
+                                      filetypes=(('MP3 Files', '*.mp3'),))
     song = song.replace('C:/Users/Public/Music/', '')
     song = song.replace('.mp3', '')
     song_box.insert(END, song)
-#===========================================================================================================
+
+
 def play():
     pygame.mixer.music.unpause()
     song = song_box.get(ACTIVE)
     song = f'{song}.mp3'
     pygame.mixer.music.load(song)
     pygame.mixer.music.play(loops=0)
-#====================================================================================
+
+
 def stop():
     pygame.mixer.music.stop()
     song_box.selection_clear(ACTIVE)
-#====================================================================================
+
+
 paused = False
+
+
 def pause():
     global paused
     if paused:
@@ -35,37 +43,56 @@ def pause():
     else:
         pygame.mixer.music.pause()
         paused = True
-#====================================================================================
 
-#===========================================================================================================
+
+def next():
+    next_song = song_box.curselection()[0] + 1
+    if next_song >= len(song_box.get(0, END)):
+        next_song = 0
+    song_box.selection_clear(0, END)
+    song_box.activate(next_song)
+    song_box.selection_set(next_song, last=None)
+    play()
+
+
+def prev():
+    prev_song = song_box.curselection()[0] - 1
+    if prev_song < 0:
+        prev_song = len(song_box.get(0, END)) - 1
+    song_box.selection_clear(0, END)
+    song_box.activate(prev_song)
+    song_box.selection_set(prev_song, last=None)
+    play()
+
+
 song_box = Listbox(root, bg='black', fg='green', width=60)
 song_box.pack(pady=20)
-#===========================================================================================================
+
 controls_frame = Frame(root)
 controls_frame.pack()
-#===========================================================================================================
+
 BackButtonImage = PhotoImage(file='back.png')
 PauseButtonImage = PhotoImage(file='pause.png')
 PlayButtonImage = PhotoImage(file='play.png')
 StopButtonImage = PhotoImage(file='stop.png')
 ForwardButtonImage = PhotoImage(file='next.png')
-#====================================================================================
-add_music = Button(controls_frame, text="Add Music", width=8, height=1 ,fg="White", font=('Helvetica', 12, "bold"), bg="#696969", command=add_song)
-backButton = Button(controls_frame, borderwidth=0, image=BackButtonImage)
+
+add_music = Button(controls_frame, text="Add Music", width=8, height=1, fg="White", font=('Helvetica', 12, "bold"),
+                   bg="#696969", command=add_song)
+backButton = Button(controls_frame, borderwidth=0, command=prev, image=BackButtonImage)
 pauseButton = Button(controls_frame, borderwidth=0, command=pause, image=PauseButtonImage)
 playButton = Button(controls_frame, borderwidth=0, command=play, image=PlayButtonImage)
-stopButton = Button(controls_frame, borderwidth=0,command=stop, image=StopButtonImage)
-forwardButton = Button(controls_frame, borderwidth=0, image=ForwardButtonImage)
-#====================================================================================
+stopButton = Button(controls_frame, borderwidth=0, command=stop, image=StopButtonImage)
+forwardButton = Button(controls_frame, borderwidth=0, command=next, image=ForwardButtonImage)
+
 add_music.grid(row=0, column=0, padx=10)
 backButton.grid(row=0, column=1, padx=10)
 pauseButton.grid(row=0, column=2, padx=10)
 playButton.grid(row=0, column=3, padx=10)
 stopButton.grid(row=0, column=4, padx=10)
 forwardButton.grid(row=0, column=5, padx=10)
-#===========================================================================================================
+
 menu = Menu(root)
-root.config(menu = menu)
-#===========================================================================================================
+root.config(menu=menu)
 
 root.mainloop()
