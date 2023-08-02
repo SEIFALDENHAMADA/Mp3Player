@@ -1,6 +1,5 @@
 from tkinter import *
 from tkinter import filedialog
-
 import pygame
 
 root = Tk()
@@ -12,8 +11,8 @@ pygame.mixer.init()
 
 
 def add_song():
-    song = filedialog.askopenfilename(initialdir='C:/Users/Public/Music/', title='Choose a song',
-                                      filetypes=(('MP3 Files', '*.mp3'),))
+    song = filedialog.askopenfilename(title='Choose a song',
+    filetypes=(('MP3 Files', '*.mp3'),))
     song = song.replace('C:/Users/Public/Music/', '')
     song = song.replace('.mp3', '')
     song_box.insert(END, song)
@@ -22,7 +21,7 @@ def add_song():
 def play():
     pygame.mixer.music.unpause()
     song = song_box.get(ACTIVE)
-    song = f'{song}.mp3'
+    song = '{}.mp3'.format(song)
     pygame.mixer.music.load(song)
     pygame.mixer.music.play(loops=0)
 
@@ -46,22 +45,22 @@ def pause():
 
 
 def next():
-    next_song = song_box.curselection()[0] + 1
-    if next_song >= len(song_box.get(0, END)):
-        next_song = 0
-    song_box.selection_clear(0, END)
+    next_song = song_box.curselection()
+    next_song = next_song[0] + 1
+    next_song_name = song_box.get(next_song)
+    song_box.selection_clear(0, 'end')
     song_box.activate(next_song)
-    song_box.selection_set(next_song, last=None)
+    song_box.select_set(next_song)
     play()
 
 
 def prev():
-    prev_song = song_box.curselection()[0] - 1
-    if prev_song < 0:
-        prev_song = len(song_box.get(0, END)) - 1
-    song_box.selection_clear(0, END)
-    song_box.activate(prev_song)
-    song_box.selection_set(prev_song, last=None)
+    next_song = song_box.curselection()
+    next_song = next_song[0] - 1
+    next_song_name = song_box.get(next_song)
+    song_box.selection_clear(0, 'end')
+    song_box.activate(next_song)
+    song_box.select_set(next_song)
     play()
 
 
@@ -78,7 +77,7 @@ StopButtonImage = PhotoImage(file='stop.png')
 ForwardButtonImage = PhotoImage(file='next.png')
 
 add_music = Button(controls_frame, text="Add Music", width=8, height=1, fg="White", font=('Helvetica', 12, "bold"),
-                   bg="#696969", command=add_song)
+bg="#696969", command=add_song)
 backButton = Button(controls_frame, borderwidth=0, command=prev, image=BackButtonImage)
 pauseButton = Button(controls_frame, borderwidth=0, command=pause, image=PauseButtonImage)
 playButton = Button(controls_frame, borderwidth=0, command=play, image=PlayButtonImage)
